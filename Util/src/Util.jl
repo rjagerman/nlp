@@ -3,7 +3,9 @@
 # util
 #   Contains various utility functions
 
-module util
+module Util
+
+export cache
 
 ##
 # Automatically caches the results of a function to a file and read that on future invocations

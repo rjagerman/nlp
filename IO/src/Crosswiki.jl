@@ -1,9 +1,7 @@
 # NLP Project - Entity Linking
 #
-# io.crosswiki
+# IO.Crosswiki
 #   Contains various functions for file input/output
-
-module crosswiki
 
 using GZip
 using DataStructures
@@ -24,7 +22,7 @@ end
 ##
 # Constructs the sparse dictionary matrix
 #
-function read(path::String)
+function read_dict(path::String)
     file = gzopen(path)
 
     V = Float64[]
@@ -52,6 +50,4 @@ function read(path::String)
     return (tokens, entities, sparse(I, J, V))
 end
 
-read() = read("data/crosswikis-dict-preprocessed.gz")
-
-end
+read_dict() = read_dict("data/crosswikis-dict-preprocessed.gz")
