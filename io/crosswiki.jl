@@ -32,8 +32,8 @@ function read(path::String)
     J = Uint32[]
     tokens = Dict{String, Uint32}()
     entities = Dict{String, Uint32}()
-    sizehint!(tokens, 4000)
-    sizehint!(entities, 4000000)
+    sizehint(tokens, 4000)
+    sizehint(entities, 4000000)
 
     count = 0
     for (token, entity, score) in imap(process_line, eachline(file))
