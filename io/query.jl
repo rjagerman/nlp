@@ -50,7 +50,7 @@ end
 function read_queries(session::XMLElement)
     queries = Query[]
     for query in filter(x -> name(x) == "query", child_elements(session))
-        tokens = split(content(find_element(XMLElement(query), "text")))
+        tokens = split(content(find_element(query, "text")))
         annotations = read_annotations(query)
         push!(queries, Query(tokens, annotations))
     end
