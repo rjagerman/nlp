@@ -52,7 +52,7 @@ function score(prediction::Query, truth::Query, metric::Function, strict::Bool)
 end
 
 function score(predictions::Array{Query}, truth::Array{Query}, metric::Function, strict::Bool)
-    return sum([score(q1, q2, metric, strict) for (q1, q2) in zip(predictions, truth)]) / length(predictions)
+    return mean([score(q1, q2, metric, strict) for (q1, q2) in zip(predictions, truth)])
 end
 
 end
