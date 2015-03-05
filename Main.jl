@@ -10,6 +10,7 @@ if !("." in LOAD_PATH) push!(LOAD_PATH, ".") end
 using IO
 using Util
 using Metrics
+using EntityLinking
 
 # Read tokens and entities
 println("Loading crosswiki data")
