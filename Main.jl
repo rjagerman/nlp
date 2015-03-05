@@ -17,6 +17,10 @@ println("Loading crosswiki data")
 crosswiki_file = "data/crosswikis-dict-preprocessed.gz"
 tokens, entities, scores = cache("cache/crosswikis", () -> read_dict(crosswiki_file))
 
+# Generate the inverse index
+inv_tokens = {index => token for (token, index) in tokens}
+inv_entities = {index => entity for (entity, index) in entities}
+
 # Read queries and training data
 println("Loading query data")
 sessions = read_queries("data/query-data-train-set.xml")
