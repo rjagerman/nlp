@@ -23,14 +23,15 @@ inv_entities = {index => entity for (entity, index) in entities}
 
 # Read queries and training data
 println("Loading query data")
-sessions = read_queries("data/query-data-train-set.xml")
+sessions_truth = read_queries("data/query-data-train-set.xml")
+sessions_predictions = read_queries("data/query-data-train-set.xml")
 
 # The ground truth queries
 truth = Query[]
-map(session -> append!(truth, session.queries), sessions)
+map(session -> append!(truth, session.queries), sessions_truth)
 
 # To do: make our own predictions on entities
-predictions = truth
+predictions = link_naive(sessions_predictions, scores, tokens, inv_entities)
 
 # Evaluate predictions and print them
 strict_precision = Metrics.score(predictions, truth, Metrics.precision, true)

@@ -6,6 +6,7 @@
 module EntityLinking
 
 export ngram_partitions
+export link_naive
 
 include("Naive.jl")
 include("NgramPartitions.jl")
