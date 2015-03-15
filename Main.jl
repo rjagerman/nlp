@@ -50,4 +50,3 @@ println("Strict F1:        " * string(strict_f1))
 
 # Done
 println("Done")
-
