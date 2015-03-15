@@ -55,9 +55,7 @@ function read_queries(session::XMLElement)
     for query in filter(x -> name(x) == "query", child_elements(session))
         tokens = split(content(find_element(query, "text")))
         annotations = read_annotations(query)
-        if size(annotations) > (0,)
-            push!(queries, Query(tokens, annotations))
-        end
+        push!(queries, Query(tokens, annotations))
     end
     return queries
 end
@@ -70,9 +68,7 @@ function read_queries(path::String)
     sessions = Session[]
     for session in filter(x -> name(x) == "session", child_elements(root(doc)))
         queries = read_queries(session)
-        if size(queries) > (0,)
-            push!(sessions, Session(queries))
-        end
+        push!(sessions, Session(queries))
     end
     return sessions
 end

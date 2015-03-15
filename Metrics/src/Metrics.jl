@@ -52,7 +52,16 @@ function score(prediction::Query, truth::Query, metric::Function, strict::Bool)
 end
 
 function score(predictions::Array{Query}, truth::Array{Query}, metric::Function, strict::Bool)
-    return mean([score(q1, q2, metric, strict) for (q1, q2) in zip(predictions, truth)])
+    result = 0
+    count = 0
+    for (q1, q2) in zip(predictions, truth)
+        if size(q2.annotations) > (0,)
+            result = result + score(q1, q2, metric, strict)
+            count = count + 1
+        end
+    end
+    return result/count
+    #return mean([score(q1, q2, metric, strict) for (q1, q2) in zip(predictions, truth)])
 end
 
 end
