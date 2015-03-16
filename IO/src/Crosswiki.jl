@@ -34,7 +34,7 @@ function read_dict(path::String)
     sizehint(entities, 4000000)
 
     count = 0
-    for (token, entity, score) in imap(process_line, eachline(file))
+    for (token, entity, score) in imap(process_line, filter(line -> length(line) > 0, eachline(file)))
         count += 1
         if count % 10000 == 0
             println(count)
