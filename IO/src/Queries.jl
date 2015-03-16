@@ -53,7 +53,7 @@ end
 function read_queries(session::XMLElement)
     queries = Query[]
     for query in filter(x -> name(x) == "query", child_elements(session))
-        tokens = split(content(find_element(query, "text")))
+        tokens = filter(x -> length(x) > 0, split(content(find_element(query, "text")), r",|\.[^a-zA-Z]|\.$| "))
         annotations = read_annotations(query)
         push!(queries, Query(tokens, annotations))
     end
