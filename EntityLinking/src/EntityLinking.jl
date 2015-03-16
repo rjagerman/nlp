@@ -5,10 +5,11 @@
 
 module EntityLinking
 
-export ngram_partitions
 export link_naive
+export link_tagme
 
+include("Greedy.jl")
 include("Naive.jl")
-include("NgramPartitions.jl")
+include("Tagme.jl")
 
 end
