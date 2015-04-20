@@ -40,7 +40,7 @@ map(session -> append!(truth, session.queries), sessions_truth)
 predictions = @match ARGS[1] begin
     "naive" => link_naive(sessions_predictions)
     "tagme" => link_tagme(sessions_predictions)
-    x => (println("Algorithm should naive or tagme"); exit(1))
+    x => (println("Unknown algorithm"); exit(1))
 end
 
 # Print predictions
