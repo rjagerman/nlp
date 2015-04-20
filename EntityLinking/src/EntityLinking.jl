@@ -7,6 +7,7 @@ module EntityLinking
 
 export link_naive
 export link_tagme
+export ngram_candidates
 
 include("NgramCandidates.jl")
 include("Greedy.jl")
