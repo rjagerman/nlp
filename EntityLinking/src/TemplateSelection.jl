@@ -41,10 +41,11 @@ function link_single_query(query, candidates::Function)
     query.annotations = []
 
     # Process all the candidates
+    println(query)
     for candidate in candidates(query)
         
         # Score this candidate 
-        println(candidate)
+        
 
     end
 
