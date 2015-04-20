@@ -40,6 +40,7 @@ map(session -> append!(truth, session.queries), sessions_truth)
 predictions = @match ARGS[1] begin
     "naive" => link_naive(sessions_predictions)
     "tagme" => link_tagme(sessions_predictions)
+    "template" => link_template(sessions_predictions, ngram_candidates)
     x => (println("Unknown algorithm"); exit(1))
 end
 

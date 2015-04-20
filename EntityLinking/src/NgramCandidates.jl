@@ -80,11 +80,9 @@ function ngram_candidates(query; n=5)
             count = next_count
         end
         if !isempty(partition_token_candidates)
-            println(partition_token_candidates)
             for combination in apply(Iterators.product, partition_token_candidates)
-                println(combination)
+                push!(candidates, [combination...])
             end
-            #append!(candidates, partition_token_candidates)
         end
 
     end

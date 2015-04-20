@@ -42,13 +42,12 @@ function link_single_query(query, candidates::Function)
 
     # Process all the candidates
     for candidate in candidates(query)
-        # Process this candidate:
-        # Do we add it or not to the query?
-
-
-        # Add an annotation like this:
-        # push!(query.annotations, candidate)
+        
+        # Score this candidate 
+        println(candidate)
 
     end
+
+    # Select the highest scoring candidate as the query.annotations
 
 end
