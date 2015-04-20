@@ -43,7 +43,6 @@ function read_topn(crosswiki_file, n::Int)
                 tokens[token] = (String, Float64)[]
             end
             push!(tokens[token], (entity, score))
-            println((token, entity, score))
         end
 
         last_token = token
@@ -55,7 +54,7 @@ end
 # Find candidates for a given query
 # Should return a PriorityQueue of Annotation types
 # 
-function ngram_candidates(query, n)
+function ngram_candidates(query; n=5)
 
     # Construct a candidates priority queue
     candidates = Array(Vector{Annotation}, 0)
