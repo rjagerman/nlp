@@ -12,9 +12,7 @@ Also create a folder `cache/` in the repository folder. This will ensure that th
 ## Run
 To run the application:
 
-    julia Main.jl
+    julia Main.jl <algorithm> <query-file>
 
-Alternatively open a julia shell by calling `julia` and execute the following command:
-
-    include("Main.jl")
+Where the `algorithm` has to exist in the `@match` statement in `Main.jl`. For example: `tagme`, `naive` or `template`. The `query-file` parameter should be the path to the XML file that has the queries. This can be either the train set or the dev set.
 
