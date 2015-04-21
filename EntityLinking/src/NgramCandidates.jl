@@ -54,7 +54,7 @@ end
 # Find candidates for a given query
 # Should return a PriorityQueue of Annotation types
 # 
-function ngram_candidates(query; n=5; m=5)
+function ngram_candidates(query; n=3, m=4)
 
     # Construct a candidates priority queue
     candidates = Array(Vector{Annotation}, 0)
