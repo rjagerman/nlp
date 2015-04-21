@@ -54,7 +54,7 @@ end
 # Find candidates for a given query
 # Should return a PriorityQueue of Annotation types
 # 
-function ngram_candidates(query; n=5)
+function ngram_candidates(query; n=5; m=5)
 
     # Construct a candidates priority queue
     candidates = Array(Vector{Annotation}, 0)
@@ -62,7 +62,7 @@ function ngram_candidates(query; n=5)
     token_entities = cache("cache/top5", () -> read_topn(crosswiki_file, 5))
 
     # iterate over query.tokens
-    for partition in ngram_partitions(query.tokens, n)
+    for partition in ngram_partitions(query.tokens, m)
         
         partition_token_candidates = Array(Vector{Annotation}, 0)
         count = 1
