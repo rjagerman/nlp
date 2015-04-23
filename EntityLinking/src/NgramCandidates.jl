@@ -53,8 +53,8 @@ end
 ##
 # Find candidates for a given query
 # Should return a PriorityQueue of Annotation types
-# 
-function ngram_candidates(query; n=3, m=4)
+#
+function ngram_candidates(query; n=2, m=3)
 
     # Construct a candidates priority queue
     candidates = Array(Vector{Annotation}, 0)
@@ -63,7 +63,7 @@ function ngram_candidates(query; n=3, m=4)
 
     # iterate over query.tokens
     for partition in ngram_partitions(query.tokens, m)
-        
+
         partition_token_candidates = Array(Vector{Annotation}, 0)
         count = 1
         for token in partition
