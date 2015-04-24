@@ -1,3 +1,6 @@
 # Ignore data folders
 data/
 cache/
+
+# OSX
+.DS_Store
