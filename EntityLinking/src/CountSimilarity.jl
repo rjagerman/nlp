@@ -49,22 +49,27 @@ function link_single_query(query, counts, candidates::Function)
     query.annotations = []
 
     # Process all the candidates
-    # println(query)
+    println(query)
     scores = PriorityQueue(Reverse)
 
     for candidate in candidates(query)
         score = 0
         # checks for combination of entities
         # need to check all combinations (as it is unclear, which direction is stored in the counts files)
-        for firstAnnotation in candidate
-            for secondAnnotation in candidate
-                if (firstAnnotation.entity != secondAnnotation.entity)
-                  # function to get value or return 0 by default
-                  # score based on sum of scores (should also try out average etc.)
-                    if haskey(counts, (firstAnnotation.entity, secondAnnotation.entity))
-                        score = score + counts[(firstAnnotation.entity, secondAnnotation.entity)]
+        if (length(candidate) == 1)
+            score = 10 + candidate[1].prior
+        else
+            for firstAnnotation in candidate
+                for secondAnnotation in candidate
+                    if (firstAnnotation.entity != secondAnnotation.entity)
+                      # function to get value or return 0 by default
+                      # score based on sum of scores (should also try out average etc.)
+                        if haskey(counts, (firstAnnotation.entity, secondAnnotation.entity))
+                            score = score + counts[(firstAnnotation.entity, secondAnnotation.entity)]
+                        end
                     end
                 end
+                score = score + firstAnnotation.prior
             end
         end
         # probably should take lengths into account (choose ngram with longest annotation)

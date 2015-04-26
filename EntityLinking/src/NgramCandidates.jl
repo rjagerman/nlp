@@ -71,7 +71,7 @@ function ngram_candidates(query; n=2, m=3)
             token_candidates = Annotation[]
             if token in keys(token_entities)
                 for (entity, score) in token_entities[token]
-                    push!(token_candidates, Annotation(entity, (count, next_count - 1)))
+                    push!(token_candidates, Annotation(entity, (count, next_count - 1), score))
                 end
             end
             if !isempty(token_candidates)
