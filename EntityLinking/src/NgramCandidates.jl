@@ -32,13 +32,14 @@ function read_topn(crosswiki_file, n::Int)
     count = 1
     file = gzopen(crosswiki_file)
     for (token, entity, score) in imap(process_line, filter(line -> length(line) > 0, eachline(file)))
+        token = lowercase(token)
         if token == last_token
             count += 1
         else
             count = 1
         end
 
-        if count <= n
+        if count <= n && score > 0.09
             if !(token in keys(tokens))
                 tokens[token] = (String, Float64)[]
             end
@@ -46,7 +47,7 @@ function read_topn(crosswiki_file, n::Int)
         end
 
         last_token = token
-    end
+      end
     return tokens
 end
 
@@ -54,12 +55,12 @@ end
 # Find candidates for a given query
 # Should return a PriorityQueue of Annotation types
 #
-function ngram_candidates(query; n=2, m=3)
+function ngram_candidates(query; n=3, m=3)
 
     # Construct a candidates priority queue
     candidates = Array(Vector{Annotation}, 0)
-    crosswiki_file = "data/crosswikis-dict-preprocessed.gz"
-    token_entities = cache("cache/top5", () -> read_topn(crosswiki_file, 5))
+    crosswiki_file = "data/update_crosswikis_without_stuff.gz"
+    token_entities = cache("cache/top5", () -> read_topn(crosswiki_file, n))
 
     # iterate over query.tokens
     for partition in ngram_partitions(query.tokens, m)
@@ -69,6 +70,10 @@ function ngram_candidates(query; n=2, m=3)
         for token in partition
             next_count = count + length(split(token, " "))
             token_candidates = Annotation[]
+            token = lowercase(token)
+            token = strip(token, ['?', ' '])
+            token = strip(token, ['/', ' '])
+            token = strip(token, ['"', ' '])
             if token in keys(token_entities)
                 for (entity, score) in token_entities[token]
                     push!(token_candidates, Annotation(entity, (count, next_count - 1), score))

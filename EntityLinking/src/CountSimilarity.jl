@@ -30,7 +30,7 @@ function link_counts(sessions, candidates::Function)
 
     # Link using a greedy approach with naive candidates
     for query in queries
-        if (length(query.tokens) < 5) # max length for query
+        if (length(query.tokens) < 10 && length(query.annotations) > 0) # max length for query
             link_single_query(query, counts, candidates)
         end
     end
@@ -45,38 +45,46 @@ end
 #
 function link_single_query(query, counts, candidates::Function)
 
+
+    println(query)
     # Clear previous annotations (e.g. from loading from file)
     query.annotations = []
 
     # Process all the candidates
-    println(query)
+
     scores = PriorityQueue(Reverse)
 
     for candidate in candidates(query)
         score = 0
+        range_sum = 0
+        max_range = 0
         # checks for combination of entities
         # need to check all combinations (as it is unclear, which direction is stored in the counts files)
-        if (length(candidate) == 1)
-            score = 10 + candidate[1].prior
-        else
-            for firstAnnotation in candidate
-                for secondAnnotation in candidate
-                    if (firstAnnotation.entity != secondAnnotation.entity)
-                      # function to get value or return 0 by default
-                      # score based on sum of scores (should also try out average etc.)
-                        if haskey(counts, (firstAnnotation.entity, secondAnnotation.entity))
-                            score = score + counts[(firstAnnotation.entity, secondAnnotation.entity)]
-                        end
+        for firstAnnotation in candidate
+            for secondAnnotation in candidate
+                if (firstAnnotation.entity != secondAnnotation.entity)
+                  # function to get value or return 0 by default
+                  # score based on sum of scores (should also try out average etc.)
+                    if haskey(counts, (firstAnnotation.entity, secondAnnotation.entity))
+                        #score = score + counts[(firstAnnotation.entity, secondAnnotation.entity)]
                     end
                 end
-                score = score + firstAnnotation.prior
             end
+            #score = score + firstAnnotation.prior
+            range = firstAnnotation.range[2] - firstAnnotation.range[1]
+            score = score + firstAnnotation.prior * (2*range+1)
+            #range_sum = range_sum + range
+            #if range > max_range
+            #    max_range = range
+            #end
         end
+        # score = score + (10/length(candidate)) + 10*max_range
+        # score = score + 1*range_sum
         # probably should take lengths into account (choose ngram with longest annotation)
         # for now chooses the one with the least number of annotations (i.e. annotations itself are longer)
         # -length, as it takes the max
         if !haskey(scores, candidate)
-          enqueue!(scores, candidate, (score, -length(candidate)))
+          enqueue!(scores, candidate, score)
         end
     end
     if (!isempty(scores))

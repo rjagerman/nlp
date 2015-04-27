@@ -34,7 +34,7 @@ function read_counts(path::String, path2::String)
         if count % 1000000 == 0
             println(count)
         end
-        if (count > 10000000)
+        if (count > 5000000)
           break
         end
         if (score > 0)

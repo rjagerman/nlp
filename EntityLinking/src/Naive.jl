@@ -15,7 +15,7 @@ function link_naive(sessions)
 
     # Read tokens and entities
     println("Loading crosswiki data")
-    crosswiki_file = "data/crosswikis-dict-preprocessed.gz"
+    crosswiki_file = "data/update_crosswikis_without_stuff.gz"
     tokens, entities, scores = cache("cache/crosswikis", () -> read_dict(crosswiki_file))
 
     # Generate the inverse index
@@ -33,7 +33,7 @@ end
 
 ##
 # Computes a dictionary, mapping each unique token to the highest scoring entity and its score
-# 
+#
 function max_score_dict(scores, tokens, inv_entities)
     max_scores = Dict{String, (Float64, String)}()
     for (token, index) in tokens
@@ -48,7 +48,7 @@ end
 
 ##
 # Finds all annotation candidates (tokens that match to an entity) for a given ngram size
-# 
+#
 function naive_candidates(query, max_scores)
 
     # Construct a candidates priority queue

@@ -50,4 +50,4 @@ function read_dict(path::String)
     return (tokens, entities, sparse(I, J, V))
 end
 
-read_dict() = read_dict("data/crosswikis-dict-preprocessed.gz")
+read_dict() = read_dict("data/update_crosswikis_without_stuff.gz")
