@@ -2,8 +2,8 @@
 #
 # Main
 #   Main entry point of the application
-#   To execute run `julia main.jl <algorithm>`
-#   where <algorithm> is either "naive" or "tagme"
+#   To execute run `julia main.jl <algorithm> <path/to/query/file>`
+#   where <algorithm> is either "naive", "tagme" or "probabilistc"
 
 # Push the current working directory to the LOAD_PATH so we can use module importing with the `using` keyword
 if !("." in LOAD_PATH) push!(LOAD_PATH, ".") end
@@ -19,8 +19,6 @@ using EntityLinking
     2 => nothing
     x => (println("Usage: julia Main.jl <algorithm> <query-file>"); exit(1))
 end
-
-# Check data file existence
 query_file = ARGS[2]
 if !isfile(query_file)
     println("Data file " * query_file * " not found")
@@ -29,42 +27,36 @@ end
 
 # Read queries and training data
 println("Loading query data")
-sessions_truth = read_queries(query_file)
-sessions_predictions = read_queries(query_file)
+truth_sessions = read_queries(query_file)
+prediction_sessions = read_queries(query_file)
 
-# The ground truth queries
-truth = Query[]
-map(session -> append!(truth, session.queries), sessions_truth)
+# Flatten sessions to arrays, ignoring the session structure
+truth_queries = Query[]
+prediction_queries = Query[]
+map(session -> append!(truth_queries, session.queries), truth_sessions)
+map(session -> append!(prediction_queries, session.queries), prediction_sessions)
+for query in prediction_queries query.annotations = [] end # Remove existing annotations from our predictions array
 
-# Compute predictions, according to the specified algorithm
-predictions = @match ARGS[1] begin
-    "naive" => link_naive(sessions_predictions)
-    "tagme" => link_tagme(sessions_predictions)
-    "template" => link_template(sessions_predictions, ngram_candidates)
-    "counts" => link_counts(sessions_predictions, ngram_candidates)
-    x => (println("Unknown algorithm"); exit(1))
+# Create model for the specified algorithm
+println("Loading model $(ARGS[1])")
+model = @match ARGS[1] begin
+    "naive" => NaiveModel("crosswiki.gz")
+    "tagme" => TagmeModel("tagme-NLP-ETH-2015")
+    "lda" => LDAModel("crosswiki.gz", "data/lda/predictions", query_file[1:end-3] * "query")
+    x => (println("Unknown model type"); exit(1))
 end
 
-# Print predictions
-# for (prediction, t) in zip(predictions, truth)
-#     println(join(prediction.tokens, " "))
-#     println("  Predictions:")
-#     for annotation in prediction.annotations
-#         println("    " * string(annotation))
-#     end
-#     println("  Truth:")
-#     for annotation in t.annotations
-#         println("    " * string(annotation))
-#     end
-# end
+# Compute annotations
+println("Annotating $(length(prediction_queries)) queries")
+annotate!(prediction_queries, model)
 
 # Evaluate predictions and print the scores
-strict_precision = Metrics.score(predictions, truth, Metrics.precision, true)
-strict_recall    = Metrics.score(predictions, truth, Metrics.recall, true)
-strict_f1        = Metrics.score(predictions, truth, Metrics.f1, true)
-lazy_precision   = Metrics.score(predictions, truth, Metrics.precision, false)
-lazy_recall      = Metrics.score(predictions, truth, Metrics.recall, false)
-lazy_f1          = Metrics.score(predictions, truth, Metrics.f1, false)
+strict_precision = Metrics.score(prediction_queries, truth_queries, Metrics.precision, true)
+strict_recall    = Metrics.score(prediction_queries, truth_queries, Metrics.recall, true)
+strict_f1        = Metrics.score(prediction_queries, truth_queries, Metrics.f1, true)
+lazy_precision   = Metrics.score(prediction_queries, truth_queries, Metrics.precision, false)
+lazy_recall      = Metrics.score(prediction_queries, truth_queries, Metrics.recall, false)
+lazy_f1          = Metrics.score(prediction_queries, truth_queries, Metrics.f1, false)
 
 println("Strict precision:  " * string(strict_precision))
 println("Strict recall:     " * string(strict_recall))

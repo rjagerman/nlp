@@ -51,17 +51,12 @@ function score(prediction::Query, truth::Query, metric::Function, strict::Bool)
     end
 end
 
+##
+# Computes a mean score over arrays of predictions and truths and filters out queries that have 0 annotations
+#
 function score(predictions::Array{Query}, truth::Array{Query}, metric::Function, strict::Bool)
-    result = 0
-    count = 0
-    for (q1, q2) in zip(predictions, truth)
-        if size(q2.annotations) > (0,)
-            result = result + score(q1, q2, metric, strict)
-            count = count + 1
-        end
-    end
-    return result/count
-    #return mean([score(q1, q2, metric, strict) for (q1, q2) in zip(predictions, truth)])
+    filtered = collect(filter(x -> length(x[2].annotations) > 0, zip(predictions, truth)))
+    return mean([score(q1, q2, metric, strict) for (q1, q2) in filtered])
 end
 
 end

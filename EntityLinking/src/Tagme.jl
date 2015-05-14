@@ -11,27 +11,26 @@ import Base.Collections: PriorityQueue, enqueue!
 import Base.Order: Reverse
 
 ##
-# Links using the tagme algorithm as annotation candidates
+# The tagme model
 #
-function link_tagme(sessions)
-    return link_greedy(sessions, tagme_candidates)
+type TagmeModel <: EntityLinkingModel
+    api_key::String
+    ɛ::Float64
+    TagmeModel(api_key) = new(api_key, 0.3)
+    TagmeModel(api_key, ɛ) = new(api_key, ɛ)
 end
 
 ##
-# Generates a priority queue of annotation candidates in a query
+# Annotates a query using the naive model
 #
-function tagme_candidates(query)
-    println("Annotating " * join(query.tokens, " "))
+function annotate!(query::Query, model::TagmeModel)
+    println("""Annotating query: $(join(query.tokens, " "))""")
 
-    # Send HTTP request and parse HTML
-    response = get("http://tagme.di.unipi.it/tag"; query = {"epsilon" => 0.3, "key" => "tagme-NLP-ETH-2015", "text" => join(query.tokens, " ")})
+    # Get annotation candidates from tagme API
+    response = get("http://tagme.di.unipi.it/tag"; query = {"epsilon" => model.ɛ, "key" => model.api_key, "text" => join(query.tokens, " ")})
     data = JSON.parse(response.data)
     mapping = character_map(query)
-
-    # Construct candidates priority queue
     candidates = PriorityQueue(Reverse)
-
-    # Add all provided annotations to the priority queue with scoring based on length and rho
     for annotation in data["annotations"]
         range = (mapping[annotation["start"]], mapping[annotation["end"]])
         a = Annotation(replace(annotation["title"], " ", "_"), range)
@@ -39,12 +38,19 @@ function tagme_candidates(query)
             enqueue!(candidates, a, (abs(range[1] - range[2]), annotation["rho"])) # Sort on length first, then on rho
         end
     end
-    return candidates
+
+    # Add annotations, only if they don't overlap
+    while !isempty(candidates)
+        candidate = dequeue!(candidates)
+        if !any([overlaps(candidate.range, annotation.range) for annotation in query.annotations])
+            push!(query.annotations, candidate)
+        end
+    end
 end
 
 ##
 # Creates a mapping from character indices to token indices
-# 
+#
 function character_map(query::Query)
     mapping = Dict{Int, Int}()
     current_index = 0
@@ -56,4 +62,3 @@ function character_map(query::Query)
     end
     return mapping
 end
-
