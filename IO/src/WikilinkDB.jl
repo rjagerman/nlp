@@ -2,33 +2,34 @@ using GZip
 using JSON
 using Util
 using Requests
+using PyCall
+
+@pyimport requests as req
 
 function create_dictionaries()
 
   # Read tokens and entities
   println("Loading crosswiki data")
   crosswiki_file = "data/crosswikis_filtered.gz"
-  tokens, entities, scores = cache("cache/crosswikis", () -> read_dict(crosswiki_file))
+  id_for_url = cache("cache/id_for_url", () -> create_id_for_url())
 
-  data_for_entity = Dict{String,(Array{String},Array{String})}()
+  count = 0
+  data_for_entity = {entity => process_entity(entity,count += 1) for entity in filter_crosswiki(crosswiki_file)}
 
-  tmp = map(entity -> process_entity(string(entity)),keys(entities))
-
-  for line in tmp
-    data_for_entry[line[1]] = (line[2],line[3])
-  end
 
   return data_for_entity
 
 end
 
-function process_entity(entity::String)
-    println(entity)
-    cats = Array{String}
-    links = Array{String}
+function process_entity(entity::String,count::Int)
+    println(entity,":",count)
+    cats = {}
+    links = {}
 
-    response = get("http://en.wikipedia.org/w/api.php"; query = {"format" => "json","action" => "query","prop" => "categories|links" ,"titles" => entity ,"cllimit" => "max","pllimit"=>"max" })
-    data = JSON.parse(response.data)
+    query = {"format" => "json","action" => "query","prop" => "categories|links" ,"titles" => entity ,"cllimit" => "max","pllimit"=>"max" }
+
+    response = req.get("http://en.wikipedia.org/w/api.php"; params=query)
+    data = JSON.parse(convert(String,response["content"]))
 
     for val in values(data["query"]["pages"])
       if haskey(val,"links")
@@ -42,15 +43,15 @@ function process_entity(entity::String)
 
 
     while haskey(data,"query-continue")
-      query = {"format" => "json","action" => "query","prop" => "categories|links" ,"titles" => entity ,"cllimit" => "max","pllimit"=>"max" }
+      query = {"format" => "json","action" => "query","prop" => "categories|links" ,"titles" => entity,"cllimit" => "max","pllimit"=>"max" }
       if haskey(data["query-continue"],"categories")
         query["clcontinue"] = data["query-continue"]["categories"]["clcontinue"]
       end
       if haskey(data["query-continue"],"links")
          query["plcontinue"] = data["query-continue"]["links"]["plcontinue"]
       end
-      response = get("http://en.wikipedia.org/w/api.php"; query=query)
-      data = JSON.parse(response.data)
+      response = req.get("http://en.wikipedia.org/w/api.php"; params=query)
+      data = JSON.parse(convert(String,response["content"]))
 
       for val in values(data["query"]["pages"])
         if haskey(val,"links")
@@ -61,9 +62,8 @@ function process_entity(entity::String)
         end
       end
     end
-    println(cats,links)
 
-    return entity,cats,links
+    return (cats,links)
 end
 
 
@@ -72,18 +72,19 @@ end
 function create_id_for_url()
   # Read tokens and entities
   println("Loading crosswiki data")
-  crosswiki_file = "data/crosswikis_filtered.gz"
-  tokens, entities, scores = cache("cache/crosswikis", () -> read_dict(crosswiki_file))
+  crosswiki_file = "data/update_crosswikis_without_stuff.gz"
+  entities = cache("cache/filter_entities" , () -> filter_crosswiki(crosswiki_file))
 
+  println(length(entities))
   id_for_url = Dict{String,Int64}()
 
   total_count = 0
-  entity_count =0
+  entity_count = 0
 
   for line in filter(line -> length(line) > 0, eachline(gzopen("data/enwiki.txt.gz")))
     obj = JSON.parse(line)
     url = replace(obj["url"],"http://en.wikipedia.org/wiki/","")
-    if haskey(entities,url)
+    if in(url,entities)
       id = obj["id"][1]
       id_for_url[url] = id
 
@@ -108,7 +109,17 @@ function create_id_for_url()
   return id_for_url
 end
 
+function filter_crosswiki(path::String)
+  file = gzopen(path)
+  entities = Set{String}()
+  for (token, entity, score) in imap(process_line, filter(line -> length(line) > 0, eachline(file)))
+    if score > 0.001
+      push!(entities,entity)
+    end
+  end
 
+  return entities
+end
 
 create_dict() = create_id_for_url()
 
