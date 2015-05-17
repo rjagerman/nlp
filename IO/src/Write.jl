@@ -68,7 +68,7 @@ LightXML.add_cdata(xdoc::XMLDocument, x::XMLElement, txt::UTF8String) = add_chil
 function add_xml_annotation(doc, query, tokens, range, entity)
     xml_annotation = new_child(query, "annotation")
     span = new_child(xml_annotation, "span")
-    add_cdata(doc, span, replace(join(tokens[range[1]:range[2]], " "), r"[\+\"\'\`\,\.\<\>\?\\/()\[\]\{\}]+ | [\"\'\`\,\.\<\>\?\\/()\[\]\{\}\+]+|[\+\"\'\`\,\.\<\>\?\\/()\[\]\{\}]+$|^[\"\'\`\,\.\<\>\?\\/()\[\]\{\}\+]+", ""))
+    add_cdata(doc, span, strip(replace(join(tokens[range[1]:range[2]], " "), r"[\+\"\'\`\,\.\<\>\?\\/()\[\]\{\}]+$|^[\"\'\`\,\.\<\>\?\\/()\[\]\{\}\+]+", "")))
     if entity != ""
         target = new_child(xml_annotation, "target")
         add_cdata(doc, target, "http://en.wikipedia.org/wiki/" * entity)
