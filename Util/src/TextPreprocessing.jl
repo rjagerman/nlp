@@ -50,6 +50,8 @@ stopwords = Set(["a", "a's", "able", "about", "above", "according", "accordingly
     "wouldn't", "www", "yes", "yet", "you", "you'd", "you'll", "you're", "you've", "your", "yours", "yourself",
     "yourselves", "zero"])
 
+query_stopwords = Set(["if", "in", "for", "to", "and", "of", "a", "do", "on"])
+
 ##
 # Cleans a string by only allowing lowercase a-z and 0-9 and removing redundant spaces
 #

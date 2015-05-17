@@ -35,7 +35,7 @@ type LDAModel <: EntityLinkingModel
         entity_topics = cache("cache/entity.topics", () -> read_topics(entities_topics_file, filter = (entity) -> entity in all_entities))
         query_topics = read_topics(queries_topics_file)
 
-        new(dictionary, entity_topics, query_topics, 1, 0.95, 0.2)
+        new(dictionary, entity_topics, query_topics, 1, 0.85, 0.2)
     end
 end
 
@@ -47,7 +47,7 @@ function annotate!(query::Query, model::LDAModel)
     candidates = PriorityQueue(Reverse)
     for (range, ngram) in ngrams(query.tokens)
         ngram = strip(lowercase(replace(ngram, r"[^a-z0-9A-Z]+", " ")))
-        if ngram in keys(model.dictionary) && !(ngram in Util.stopwords) && !(split(ngram, " ")[1] in Util.stopwords) && !(split(ngram, " ")[end] in Util.stopwords)
+        if ngram in keys(model.dictionary) && !(ngram in Util.stopwords) && !(split(ngram, " ")[1] in Util.query_stopwords) && !(split(ngram, " ")[end] in Util.query_stopwords)
             entity = model.dictionary[ngram][1]
             distance = 0.0
             if entity.uri in keys(model.entity_topics)
