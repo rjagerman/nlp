@@ -24,12 +24,12 @@ end
 # Annotates a query using the naive model
 #
 function annotate!(query::Query, model::NaiveModel)
-    println("""Annotating query: $(join(query.tokens, " "))""")
 
     # Generate candidates
     candidates = PriorityQueue(Reverse)
     for (range, ngram) in ngrams(query.tokens)
-        if ngram in keys(model.dictionary)
+        ngram = strip(lowercase(replace(ngram, r"[^a-z0-9A-Z]+", " ")))
+        if ngram in keys(model.dictionary) && !(ngram in Util.stopwords) && !(split(ngram, " ")[1] in Util.stopwords) && !(split(ngram, " ")[end] in Util.stopwords)
             entity = model.dictionary[ngram][1]
             enqueue!(candidates, Annotation(entity.uri, range), (abs(range[2] - range[1]), entity.prior))
         end
