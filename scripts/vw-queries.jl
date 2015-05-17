@@ -24,11 +24,13 @@ sessions = read_queries(query_file)
 queries = Query[]
 map(session -> append!(queries, session.queries), sessions)
 
+search_results = cache("cache/googleresults-$(query_file[6:end]).dat", () -> googlesearch(queries))
+
 count = 0
 for query in queries
     text = join(query.tokens, " ")
-    output_features = string2bow(text)
     count += 1
+    output_features = string2bow(text * " " * join(search_results["processed"][count], " "))
     print("'" * string(count) * "| ")
     for feature in keys(output_features)
         print(feature * ":" * string(output_features[feature]) * " ")
