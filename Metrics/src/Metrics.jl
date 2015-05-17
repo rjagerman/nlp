@@ -13,7 +13,7 @@ using Match
 #
 function precision(prediction::Set, truth::Set)
     return @match length(prediction) begin
-        0 => length(truth) == 0 ? 1.0 : 0.0
+        0 => 0 #length(truth) == 0 ? 1.0 : 0.0
         x => length(intersect(prediction, truth)) / x
     end
 end
@@ -23,7 +23,7 @@ end
 #
 function recall(prediction::Set, truth::Set)
     return @match length(truth) begin
-        0 => length(prediction) == 0 ? 1.0 : 0.0
+        0 => 0 #length(prediction) == 0 ? 1.0 : 0.0
         x => length(intersect(prediction, truth)) / x
     end
 end
@@ -56,7 +56,10 @@ end
 #
 function score(predictions::Array{Query}, truth::Array{Query}, metric::Function, strict::Bool)
     filtered = collect(filter(x -> length(x[2].annotations) > 0, zip(predictions, truth)))
-    return mean([score(q1, q2, metric, strict) for (q1, q2) in filtered])
+    @match length(filtered) begin
+        0 => 0.0
+        x => mean([score(q1, q2, metric, strict) for (q1, q2) in filtered])
+    end
 end
 
 end
