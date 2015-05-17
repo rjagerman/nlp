@@ -1,7 +1,3 @@
-using PyCall
-@pyimport nltk.stem.porter as porter
-stemmer = porter.PorterStemmer()
-
 ##
 # Set of stop words
 #
@@ -53,23 +49,6 @@ stopwords = Set(["a", "a's", "able", "about", "above", "according", "accordingly
     "whose", "why", "why's", "will", "willing", "wish", "with", "within", "without", "won't", "wonder", "would",
     "wouldn't", "www", "yes", "yet", "you", "you'd", "you'll", "you're", "you've", "your", "yours", "yourself",
     "yourselves", "zero"])
-
-##
-# Converts a string to a bag-of-words representation
-#
-function string2bow(text::String)
-    text = lowercase(replace(text, r"[^a-zA-Z]+", " "))
-    features = split(text, r"\s+")
-    features = filter(x -> length(x) >= 3, features)
-    features = filter(x -> length(x) <= 30, features)
-    features = filter(x -> !in(x, stopwords), features)
-    features = map(x -> pycall(stemmer["stem"], PyAny, x), features)
-    output_features = Dict{String, Float64}()
-    for feature in features
-        output_features[feature] = get(output_features, feature, 0.0) + 1.0
-    end
-    return output_features
-end
 
 ##
 # Cleans a string by only allowing lowercase a-z and 0-9 and removing redundant spaces

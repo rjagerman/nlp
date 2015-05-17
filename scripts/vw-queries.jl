@@ -10,6 +10,7 @@ using IO
 using GZip
 using JSON
 using Util
+include("preprocess.jl")
 
 if length(ARGS) != 1
     println("Usage:")
@@ -30,7 +31,7 @@ count = 0
 for query in queries
     text = join(query.tokens, " ")
     count += 1
-    output_features = string2bow(text * " " * join(search_results["processed"][count], " "))
+    output_features = string_to_bow(text * " " * join(search_results["processed"][count], " "))
     print("'" * string(count) * "| ")
     for feature in keys(output_features)
         print(feature * ":" * string(output_features[feature]) * " ")

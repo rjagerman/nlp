@@ -15,7 +15,6 @@ include("Range.jl")
 
 export cache
 export ngrams
-export string2bow
 export googlesearch
 export clean
 export overlaps

@@ -9,6 +9,7 @@ if !("." in LOAD_PATH) push!(LOAD_PATH, ".") end
 using GZip
 using JSON
 using Util
+include("preprocess.jl")
 
 if length(ARGS) != 1
     println("Usage:")
@@ -23,7 +24,7 @@ end
 for line in eachline(gzopen(ARGS[1]))
     obj = JSON.parse(line)
     entity = obj["url"][1 + length("http://en.wikipedia.org/wiki/"):end]
-    features = string2bow(obj["text"])
+    features = string_to_bow(obj["text"])
     print("'$(entity)| ")
     for feature in keys(features)
         print(feature * ":" * string(features[feature]) * " ")
