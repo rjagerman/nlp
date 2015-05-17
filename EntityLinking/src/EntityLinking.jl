@@ -12,6 +12,7 @@ include("Annotator.jl")
 include("EntityDictionary.jl")
 include("Naive.jl")
 include("Tagme.jl")
+include("LDA.jl")
 
 # Types
 export NaiveModel

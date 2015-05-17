@@ -7,7 +7,7 @@
 #     Note: We know P(c | t) from our topic modeling predictions of wikipedia pages
 #
 
-using DataStructures
+using Distances
 
 ##
 # The LDA-based entity linking model
@@ -15,14 +15,26 @@ using DataStructures
 type LDAModel <: EntityLinkingModel
     dictionary::EntityDictionary
     entity_topics::Dict{String, Array{Float64}} # Maps entities to their topics
-    query_topics::Dict{String, Array{Float64}}  # Maps each query to their topics
+    query_topics::Dict{String, Array{Float64}}  # Maps queries to their topics
     query_counter::Int                          # Counter used to keep track of which query we are on
+    threshold::Float64                          # Threshold at which to remove entities (cosine distance from query)
+    dropin_threshold::Float64                   # Threshold at which to drop in replacements
 
     function LDAModel(crosswiki_file::String, entities_topics_file::String, queries_topics_file::String)
         dictionary = read_crosswikis(crosswiki_file)
-        entity_topics = read_topics(entities_topics_file, (entity) -> entity in keys(dictionary))
+
+        # Create a set of all possible entities
+        all_entities = Set{String}()
+        for (token, entities) in dictionary
+            for entity in entities
+                push!(all_entities, entity.uri)
+            end
+        end
+
+        entity_topics = cache("cache/entity.topics", () -> read_topics(entities_topics_file, filter = (entity) -> entity in all_entities))
         query_topics = read_topics(queries_topics_file)
-        new(dictionary, entity_topics, query_topics, 1)
+
+        new(dictionary, entity_topics, query_topics, 1, 0.95, 0.2)
     end
 end
 
@@ -31,20 +43,16 @@ end
 #
 function annotate!(query::Query, model::LDAModel)
 
-    # Generate candidates where entities have a computed topical overlap
     candidates = PriorityQueue(Reverse)
     for (range, ngram) in ngrams(query.tokens)
-        if ngram in keys(model.dictionary)
-            for entity in model.dictionary[ngram]
-
-                topical_overlap = 0.0
-                if entity in keys(model.entity_topics)
-                    topical_overlap = model.entity_topics[entity] ⋅ model.query_topics[model.query_counter]
-                end
-
-                score = entity.prior * topical_overlap #P(e) * ||[P(e | t, q) | t \in topics]||
-                enqueue!(candidates, Annotation(entity.uri, range), score)
+        ngram = strip(lowercase(replace(ngram, r"[^a-z0-9A-Z]+", " ")))
+        if ngram in keys(model.dictionary) && !(ngram in Util.stopwords) && !(split(ngram, " ")[1] in Util.stopwords) && !(split(ngram, " ")[end] in Util.stopwords)
+            entity = model.dictionary[ngram][1]
+            distance = 0.0
+            if entity.uri in keys(model.entity_topics)
+                distance = cosine_dist(model.entity_topics[entity.uri], model.query_topics[string(model.query_counter)])
             end
+            enqueue!(candidates, Annotation(entity.uri, range, distance), (abs(range[2] - range[1]), entity.prior))
         end
     end
 
@@ -52,7 +60,30 @@ function annotate!(query::Query, model::LDAModel)
     while !isempty(candidates)
         candidate = dequeue!(candidates)
         if !any([overlaps(candidate.range, annotation.range) for annotation in query.annotations])
-            push!(query.annotations, candidate)
+            if candidate.prior < model.threshold
+                push!(query.annotations, candidate)
+            else
+                # Find a replacement
+                ngram = join(query.tokens[candidate.range[1]:candidate.range[2]], " ")
+                ngram = strip(lowercase(replace(ngram, r"[^a-z0-9A-Z]+", " ")))
+                if ngram in keys(model.dictionary)
+                    min_distance = 1.0
+                    replacement = candidate.entity
+                    for entity in model.dictionary[ngram][1:min(8, length(model.dictionary[ngram]))]
+                        if entity.uri in keys(model.entity_topics)
+                            distance = cosine_dist(model.entity_topics[entity.uri], model.query_topics[string(model.query_counter)])
+                            if distance < min_distance
+                                min_distance = distance
+                                replacement = entity.uri
+                            end
+                        end
+                    end
+                    if min_distance < model.dropin_threshold
+                        candidate.entity = replacement
+                        push!(query.annotations, candidate)
+                    end
+                end
+            end
         end
     end
 
