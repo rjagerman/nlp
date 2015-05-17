@@ -17,7 +17,8 @@ using EntityLinking
 # Check command line arguments
 @match length(ARGS) begin
     2 => nothing
-    x => (println("Usage: julia Main.jl <algorithm> <query-file>"); exit(1))
+    3 => nothing
+    x => (println("Usage: julia Main.jl <algorithm> <query-file> [output-file]"); exit(1))
 end
 query_file = ARGS[2]
 if !isfile(query_file)
@@ -40,15 +41,21 @@ for query in prediction_queries query.annotations = [] end # Remove existing ann
 # Create model for the specified algorithm
 println("Loading model $(ARGS[1])")
 model = @match ARGS[1] begin
-    "naive" => NaiveModel("crosswiki.gz")
+    "naive" => NaiveModel("crosswiki2.gz")
     "tagme" => TagmeModel("tagme-NLP-ETH-2015")
-    "lda" => LDAModel("crosswiki.gz", "data/lda/predictions", "data/lda/" * query_file[5:end-3] * "lda")
+    "lda" => LDAModel("crosswiki.gz", "data/lda/predictions", "data/lda/" * query_file[6:end-3] * "lda")
     x => (println("Unknown model type"); exit(1))
 end
 
 # Compute annotations
 println("Annotating $(length(prediction_queries)) queries")
 annotate!(prediction_queries, model)
+
+# Print to xml format
+if length(ARGS) == 3
+    println("Writing predictions to $(ARGS[3])")
+    write_queries(prediction_sessions, ARGS[3])
+end
 
 # Evaluate predictions and print the scores
 strict_precision = Metrics.score(prediction_queries, truth_queries, Metrics.precision, true)
