@@ -1,10 +1,11 @@
 # NLP Project - Entity Linking
 #
 # LDA
-#   Get a list of different annotation candidates (entities with position)
-#   Compute the probability of seeing the query for all topics: P(q | t) for all t
-#   Score all annotation candidates by topical overlap: \sum_t \log P(c | t) + \log P(q | t)
-#     Note: We know P(c | t) from our topic modeling predictions of wikipedia pages
+#   Get the candidates provided by our heuristics
+#   Compute topics(q) for query q and topics(e) for candidate entity e
+#   This results in a distance score between query and entity: cosine_dist(topics(q), topics(e))
+#   We remove candidate annotations that have a large cosine_dist (using cutoff_threshold)
+#   For those that are removed we attempt to find a replacement that has a small cosine_dist (using dropin_threshold)
 #
 
 using Distances
@@ -17,7 +18,7 @@ type LDAModel <: EntityLinkingModel
     entity_topics::Dict{String, Array{Float64}} # Maps entities to their topics
     query_topics::Dict{String, Array{Float64}}  # Maps queries to their topics
     query_counter::Int                          # Counter used to keep track of which query we are on
-    threshold::Float64                          # Threshold at which to remove entities (cosine distance from query)
+    cutoff_threshold::Float64                   # Threshold at which to remove entities (cosine distance from query)
     dropin_threshold::Float64                   # Threshold at which to drop in replacements
 
     function LDAModel(crosswiki_file::String, entities_topics_file::String, queries_topics_file::String)
@@ -60,7 +61,7 @@ function annotate!(query::Query, model::LDAModel)
     while !isempty(candidates)
         candidate = dequeue!(candidates)
         if !any([overlaps(candidate.range, annotation.range) for annotation in query.annotations])
-            if candidate.prior < model.threshold
+            if candidate.prior < model.cutoff_threshold
                 push!(query.annotations, candidate)
             else
                 # Find a replacement
