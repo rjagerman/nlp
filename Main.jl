@@ -3,7 +3,7 @@
 # Main
 #   Main entry point of the application
 #   To execute run `julia main.jl <algorithm> <path/to/query/file>`
-#   where <algorithm> is either "naive", "tagme" or "probabilistc"
+#   where <algorithm> is either "naive", "tagme" or "lda"
 
 # Push the current working directory to the LOAD_PATH so we can use module importing with the `using` keyword
 if !("." in LOAD_PATH) push!(LOAD_PATH, ".") end
@@ -42,7 +42,7 @@ println("Loading model $(ARGS[1])")
 model = @match ARGS[1] begin
     "naive" => NaiveModel("crosswiki.gz")
     "tagme" => TagmeModel("tagme-NLP-ETH-2015")
-    "lda" => LDAModel("crosswiki.gz", "data/lda/predictions", query_file[1:end-3] * "query")
+    "lda" => LDAModel("crosswiki.gz", "data/lda/predictions", "data/lda/" * query_file[5:end-3] * "lda")
     x => (println("Unknown model type"); exit(1))
 end
 
