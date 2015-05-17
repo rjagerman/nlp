@@ -13,7 +13,7 @@ using Match
 #
 function precision(prediction::Set, truth::Set)
     return @match length(prediction) begin
-        0 => 0 #length(truth) == 0 ? 1.0 : 0.0
+        0 => 1.0
         x => length(intersect(prediction, truth)) / x
     end
 end
@@ -23,7 +23,7 @@ end
 #
 function recall(prediction::Set, truth::Set)
     return @match length(truth) begin
-        0 => 0 #length(prediction) == 0 ? 1.0 : 0.0
+        0 => length(prediction) == 0 ? 1.0 : 0.0
         x => length(intersect(prediction, truth)) / x
     end
 end
