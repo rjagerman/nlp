@@ -15,7 +15,7 @@ function link_naive(sessions)
 
     # Read tokens and entities
     println("Loading crosswiki data")
-    crosswiki_file = "data/update_crosswikis_without_stuff.gz"
+    crosswiki_file = "data/crosswiki-corrected-entities.gz"
     tokens, entities, scores = cache("cache/crosswikis", () -> read_dict(crosswiki_file))
 
     # Generate the inverse index

@@ -13,9 +13,9 @@ using Iterators
 function process_line(line::String)
     line = split(line, "\t")
     token = line[1]
-    line = split(line[2], " ")
-    score = float64(line[1])
-    entity = strip(line[2])
+    line = split(line[2])
+    score = float64(line[2])
+    entity = strip(line[1])
     return token, entity, score
 end
 
@@ -50,4 +50,4 @@ function read_dict(path::String)
     return (tokens, entities, sparse(I, J, V))
 end
 
-read_dict() = read_dict("data/update_crosswikis_without_stuff.gz")
+read_dict() = read_dict("data/crosswiki-corrected-entities.gz")

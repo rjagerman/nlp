@@ -17,9 +17,9 @@ include("NgramPartitions.jl")
 function process_line(line::String)
     line = split(line, "\t")
     token = line[1]
-    line = split(line[2], " ")
-    score = float64(line[1])
-    entity = strip(line[2])
+    line = split(line[2])
+    score = float64(line[2])
+    entity = strip(line[1])
     return token, entity, score
 end
 
@@ -39,7 +39,7 @@ function read_topn(crosswiki_file, n::Int)
             count = 1
         end
 
-        if count <= n && score > 0.09
+        if count <= n
             if !(token in keys(tokens))
                 tokens[token] = (String, Float64)[]
             end
@@ -55,11 +55,11 @@ end
 # Find candidates for a given query
 # Should return a PriorityQueue of Annotation types
 #
-function ngram_candidates(query; n=3, m=3)
+function ngram_candidates(query; n=3, m=5)
 
     # Construct a candidates priority queue
     candidates = Array(Vector{Annotation}, 0)
-    crosswiki_file = "data/update_crosswikis_without_stuff.gz"
+    crosswiki_file = "data/crosswiki-corrected-entities.gz"
     token_entities = cache("cache/top5", () -> read_topn(crosswiki_file, n))
 
     # iterate over query.tokens
@@ -74,7 +74,10 @@ function ngram_candidates(query; n=3, m=3)
             token = strip(token, ['?', ' '])
             token = strip(token, ['/', ' '])
             token = strip(token, ['"', ' '])
-            if token in keys(token_entities)
+            token = strip(token, ['-', ' '])
+            token = strip(token, ['(', ' '])
+            token = strip(token, [')', ' '])
+            if token in keys(token_entities) && !(token in Util.stopwords)
                 for (entity, score) in token_entities[token]
                     push!(token_candidates, Annotation(entity, (count, next_count - 1), score))
                 end

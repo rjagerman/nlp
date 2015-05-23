@@ -36,6 +36,7 @@ function tagme_candidates(query)
         range = (mapping[annotation["start"]], mapping[annotation["end"]])
         a = Annotation(replace(annotation["title"], " ", "_"), range)
         if !(a in keys(candidates)) # Prevent duplicate entities (facebook.com and facebook)
+            println(a)
             enqueue!(candidates, a, (abs(range[1] - range[2]), annotation["rho"])) # Sort on length first, then on rho
         end
     end
@@ -44,7 +45,7 @@ end
 
 ##
 # Creates a mapping from character indices to token indices
-# 
+#
 function character_map(query::Query)
     mapping = Dict{Int, Int}()
     current_index = 0
@@ -56,4 +57,3 @@ function character_map(query::Query)
     end
     return mapping
 end
-
