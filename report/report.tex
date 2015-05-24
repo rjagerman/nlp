@@ -106,6 +106,8 @@ In table \ref{tbl:results} you can see our results in terms of strict and lazy $
 \section{Conclusion \& Future Work}
 Annotating simply with the highest prior annotation turned out to give the best results. A reason for this could be the simplicity of an average query, i.e. people usually look for the most common things. Moreover, the evaluation depends very much on having the correct entity set. As not every entity used by the human annotator is included in the entity set of the crosswiki file, it is impossible to get 100\% correct annotations. We measured that our theoretical upper bound is 72.3\%. In addition, LDA is able to help removing false positives and in some cases replace false positives with true positives.
 
+In future work, we would try to improve the Wikipedia approach by using the complete Wikipedia and not just 70,000 entities (which would require more memory). Moreover, improvement is expected from tuning the LDA hyperparameters.
+
 \bibliographystyle{ieeetr}
 \bibliography{references}
 
