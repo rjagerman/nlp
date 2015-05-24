@@ -3,6 +3,12 @@
 # Usage:
 #   julia scripts/vw-wikipedia.jl <path/to/enwiki.txt.gz>
 #
+# Pipeline output into the following command to train model:
+#   vw --lda <num-topics> -b <num-hash-bits> --lda_D <num-documents> --passes <num-passes> -f <path/to/store/model> --cache_file <path/to/tmp/cache> --minibatch 256 --lda_alpha 0.1 --lda_rho 0.1  --power_t 0.5 --initial_t 1
+#
+# Pipeline output into the following command to compute predictions:
+#   vw -i <path/to/model> -p <path/to/predictions> -t
+#
 
 if !("." in LOAD_PATH) push!(LOAD_PATH, ".") end
 
