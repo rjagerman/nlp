@@ -53,7 +53,7 @@ x =&\,\, \parbox[t]{6cm}{A bag-of-word representation of text (an entity's wikip
 d(q,e) =&\,\, \text{cosinedistance}(\text{topics}(q), \text{topics}(e))
 \end{flalign*}
 
-In order to obtain the topics of all entities and queries we have trained a latent dirichlet allocation (LDA) model on the entire Wikipedia corpus. We used the Vowpal Wabbit implementation \cite{vw}, which uses feature hashing and streaming to reduce the memory requirements. The trained model is used to compute the topic-probability vectors of every entity and query.
+In order to obtain the topics of all entities and queries we have trained a latent dirichlet allocation (LDA) model \cite{blei2003latent} on the entire Wikipedia corpus. We used the Vowpal Wabbit implementation \cite{langford2011vowpal}, which uses feature hashing and streaming to reduce the memory requirements. The trained model is used to compute the topic-probability vectors of every entity and query.
 
 Using only the cosine distance between topic vectors of queries and entities is not sufficient to accurately annotate the queries. This is because annotations are often not specific enough. Even though we know a query and an entity are both about politics, it is difficult to determine more subtle differences that are of importance to the annotation (e.g. politics of what country).
 
@@ -88,10 +88,10 @@ In table \ref{tbl:results} you can see our results in terms of strict and lazy $
 \label{tbl:results}
 \end{table}
 
-
 \section{Conclusion \& Future Work}
 Annotating simply with the highest prior annotation turned out to give the best results. A reason for this could be the simplicity of an average query, i.e. people usually look for the most common things. Moreover, the evaluation depends very much on having the correct entity set. As not every entity used by the human annotator is included in the entity set of the crosswiki file, it is impossible to get 100\% correct annotations. We measured that our theoretical upper bound is 72.3\%. In addition, LDA is able to help removing false positives and in some cases replace false positives with true positives.
 
-
+\bibliographystyle{ieeetr}
+\bibliography{references}
 
 \end{document}
