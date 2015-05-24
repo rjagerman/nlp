@@ -51,7 +51,7 @@ end
 println("Annotating $(length(prediction_queries)) queries")
 annotate!(prediction_queries, model)
 
-# Print to xml format
+# Write predictions to xml format
 if length(ARGS) == 3
     println("Writing predictions to $(ARGS[3])")
     write_queries(prediction_sessions, ARGS[3])
