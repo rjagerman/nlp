@@ -7,12 +7,9 @@ Make sure you have julia installed and can call `julia` from the command line. C
 * `query-data-dev-set.xml`
 * `query-data-train-set.xml`
 
-Also create a folder `cache/` in the repository folder. This will ensure that the code can cache results which will improve the performance for future invocations.
-
 ## Run
 To run the application:
 
-    julia Main.jl <algorithm> <query-file>
+    julia Main.jl <algorithm> <query-file> [output-file]
 
-Where the `algorithm` has to exist in the `@match` statement in `Main.jl`. For example: `tagme`, `naive` or `template`. The `query-file` parameter should be the path to the XML file that has the queries. This can be either the train set or the dev set.
-
+Where the `algorithm` is either `tagme`, `naive` or `lda`. The `query-file` parameter should be the path to the XML file that has the queries. Optionally you can specify an output file to which the annotator will write its predictions in XML format.

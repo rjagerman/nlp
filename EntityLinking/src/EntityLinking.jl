@@ -5,17 +5,21 @@
 
 module EntityLinking
 
-export link_naive
-export link_tagme
-export link_template
-export link_counts
-export ngram_candidates
+# An entity linking model
+abstract EntityLinkingModel
 
-include("NgramCandidates.jl")
-include("Greedy.jl")
+include("Annotator.jl")
+include("EntityDictionary.jl")
 include("Naive.jl")
 include("Tagme.jl")
-include("TemplateSelection.jl")
-include("CountSimilarity.jl")
+include("LDA.jl")
+
+# Types
+export NaiveModel
+export TagmeModel
+export LDAModel
+
+# Functions
+export annotate!
 
 end
