@@ -19,7 +19,7 @@ This julia project has dependencies on several julia packages:
 
 You can install these dependencies by running `julia Dependencies.jl` in the repository folder.
 
-If you wish to train the LDA model yourself, you will also need [`vw`](https://github.com/JohnLangford/vowpal_wabbit/wiki), [`python`](https://www.python.org/) and the [`nltk`](http://www.nltk.org/) python package. Instructions can be found in the `scripts/vw-wikipedia.jl` file.
+If you wish to train the LDA model yourself, you will also need [`vw`](https://github.com/JohnLangford/vowpal_wabbit/wiki), [`python`](https://www.python.org/) and the [`nltk`](http://www.nltk.org/) python package. Instructions can be found in the `scripts/vw-wikipedia.jl` file. You can download the wikipedia corpus in JSON format, on which we trained our LDA model, [here](https://drive.google.com/file/d/0Byx2RBLwFKFsdnZjQldHMS1mRk0/view?usp=sharing) (5GB zipped).
 
 ## Run
 To run the application:
