@@ -16,7 +16,9 @@ This julia project has dependencies on several julia packages:
 * `Match`: Scala-like match/case statements
 * `Requests`: HTTP requests
 
-You can install these dependencies by running `julia Dependencies.jl` in the repository folder.o
+You can install these dependencies by running `julia Dependencies.jl` in the repository folder.
+
+If you wish to train the LDA model yourself, you will also need [`vw`](https://github.com/JohnLangford/vowpal_wabbit/wiki), [`python`](https://www.python.org/) and the [`nltk`](http://www.nltk.org/) python package. Instructions can be found in the `scripts/vw-wikipedia.jl` file.
 
 ## Run
 To run the application:
