@@ -3,6 +3,9 @@
 # Usage:
 #   julia scripts/vw-queries.jl <path/to/query-data-...-set.xml>
 #
+# Pipeline output into the following command to compute predictions:
+#   vw -i <path/to/model> -p <path/to/predictions> -t
+#
 
 if !("." in LOAD_PATH) push!(LOAD_PATH, ".") end
 

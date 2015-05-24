@@ -22,7 +22,7 @@ using EntityLinking
 end
 query_file = ARGS[2]
 if !isfile(query_file)
-    println("Data file " * query_file * " not found")
+    println("Query file $(query_file) not found")
     exit(1)
 end
 
@@ -41,9 +41,9 @@ for query in prediction_queries query.annotations = [] end # Remove existing ann
 # Create model for the specified algorithm
 println("Loading model $(ARGS[1])")
 model = @match ARGS[1] begin
-    "naive" => NaiveModel("crosswiki2.gz")
+    "naive" => NaiveModel("data/crosswiki.gz")
     "tagme" => TagmeModel("tagme-NLP-ETH-2015")
-    "lda" => LDAModel("crosswiki.gz", "data/lda/predictions", "data/lda/" * query_file[6:end-3] * "lda")
+    "lda" => LDAModel("data/crosswiki.gz", "data/lda/enwiki.lda", "data/lda/" * query_file[6:end-3] * "lda")
     x => (println("Unknown model type"); exit(1))
 end
 
@@ -51,7 +51,7 @@ end
 println("Annotating $(length(prediction_queries)) queries")
 annotate!(prediction_queries, model)
 
-# Print to xml format
+# Write predictions to xml format
 if length(ARGS) == 3
     println("Writing predictions to $(ARGS[3])")
     write_queries(prediction_sessions, ARGS[3])
