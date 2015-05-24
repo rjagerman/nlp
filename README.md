@@ -2,10 +2,21 @@
 This is the source code for the entity linking project which is part of the natural language processing course at ETHZ. It is built using [Julia v0.3.6](http://julialang.org/).
 
 ## Installation
-Make sure you have julia installed and can call `julia` from the command line. Clone this repository to a location on your computer, and browse to that location. Create a folder `data/` in the repository folder and place the following data files in that directory:
-* `crosswikis-dict-preprocessed.gz`
-* `query-data-dev-set.xml`
-* `query-data-train-set.xml`
+Make sure you have julia installed and can call `julia` from the command line. Clone this repository to a location on your computer, and browse to that location. Create a folder `cache/` in the repository folder. Download the `data.zip` file (1.5GB zipped, 6GB unzipped) and unzip it to the repository folder.
+
+## Dependencies
+This julia project has dependencies on several julia packages:
+* `DataStructures`: Priority queue
+* `Distances`: Cosine distance metric
+* `Gumbo`: HTML parsing
+* `GZip`: Streaming gzip files
+* `Iterators`: Iterative mapping
+* `JSON`: JSON parsing
+* `LightXML`: Reading/writing XML files
+* `Match`: Scala-like match/case statements
+* `Requests`: HTTP requests
+
+You can install these dependencies by running `julia Dependencies.jl` in the repository folder.o
 
 ## Run
 To run the application:
