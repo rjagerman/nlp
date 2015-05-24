@@ -23,7 +23,7 @@ end
 #
 function recall(prediction::Set, truth::Set)
     return @match length(truth) begin
-        0 => length(prediction) == 0 ? 1.0 : 0.0
+        0 => 0 # length(prediction) == 0 ? 1.0 : 0.0
         x => length(intersect(prediction, truth)) / x
     end
 end

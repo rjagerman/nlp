@@ -35,6 +35,7 @@ function annotate!(query::Query, model::TagmeModel)
         range = (mapping[annotation["start"]], mapping[annotation["end"]])
         a = Annotation(replace(annotation["title"], " ", "_"), range)
         if !(a in keys(candidates)) # Prevent duplicate entities (facebook.com and facebook)
+            println(a)
             enqueue!(candidates, a, (abs(range[1] - range[2]), annotation["rho"])) # Sort on length first, then on rho
         end
     end
