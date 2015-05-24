@@ -2,7 +2,7 @@
 This is the source code for the entity linking project which is part of the natural language processing course at ETHZ. It is built using [Julia v0.3.6](http://julialang.org/).
 
 ## Installation
-Make sure you have julia installed and can call `julia` from the command line. Clone this repository to a location on your computer, and browse to that location. Create a folder `cache/` in the repository folder. Download the `data.zip` file (1.5GB zipped, 6GB unzipped) and unzip it to the repository folder.
+Make sure you have julia installed and can call `julia` from the command line. Clone this repository to a location on your computer, and browse to that location. Create a folder `cache/` in the repository folder. Download the [`data.zip`](https://drive.google.com/file/d/0Byx2RBLwFKFsR3d3cTJSYnJTQkk/view?usp=sharing) file (1.5GB zipped, 6GB unzipped) and unzip it to the repository folder.
 
 ## Dependencies
 This julia project has dependencies on several julia packages:
