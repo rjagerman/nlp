@@ -14,6 +14,7 @@ This julia project has dependencies on several julia packages:
 * `JSON`: JSON parsing
 * `LightXML`: Reading/writing XML files
 * `Match`: Scala-like match/case statements
+* `PyCall`: Calling python libraries from julia
 * `Requests`: HTTP requests
 
 You can install these dependencies by running `julia Dependencies.jl` in the repository folder.
