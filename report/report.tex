@@ -27,7 +27,7 @@ To annotate queries we have implemented numerous algorithms. In the following se
 \section{Failed Approaches}
 
 \subsection{Wikipedia Categories}
-In order to annotate queries, we consider a list of candidate entities and try to find the best combination that does not overlap. To achieve this we look at the similarity between pairs of entities from our candidates. To determine the similarity of two entities we look at the overlap of the wikipedia categories they belong to. To further increase the quality we took into account the links: should one entity link to the other one, we increase the similarity score and should there be a link back the score is increased even more.
+In order to annotate queries, we consider a list of candidate entities and try to find the best combination that does not overlap. To achieve this we look at the similarity between pairs of candidate entities. To determine the similarity of two entities we look at the overlap of the wikipedia categories they belong to. To further increase the quality we took into account the links: should one entity link to the other one, we increase the similarity score and should there be a link back the score is increased even more.
 We ran into problems with getting the data of the categories. We then decided to use the Wikipedia API to query the categories, which takes a long time, so we decided to filter the crosswikis file by looking only at entries with prior greater than 0.01. However this lead to a very reduced crosswikis file with only 70,000 entities.
 This resulted in a very low F1 score, since for many annotations the correct entity was not in the filtered crosswikis file.  
 
