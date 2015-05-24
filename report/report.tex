@@ -53,6 +53,19 @@ x =&\,\, \parbox[t]{6cm}{A bag-of-word representation of text (an entity's wikip
 d(q,e) =&\,\, \text{cosinedistance}(\text{topics}(q), \text{topics}(e))
 \end{flalign*}
 
+\begin{table*}[t]
+	\centering
+	\begin{tabular}{|l|l|l|}
+		\hline
+		\textbf{Topic} & \textbf{Top entities (wikipedia pages)} & \textbf{Top queries (from training set)} \\ \hline
+		54 & \parbox[t]{6cm}{Cream\_of\_asparagus\_soup\\Crumble\\Wurstbrot} & \parbox[t]{5cm}{rice recipes\\fried rice recipes\\healty recipes}  \\ \hline
+		71 & \parbox[t]{6cm}{Puzzle \& Dragons Z + Super Mario... \\Arcade\_Classics\_(CD-i\_game)\\Nerf\_N-Strike} & \parbox[t]{5cm}{free online games\\atari consoles history\\atari consoles} \\ \hline
+		100 & \parbox[t]{6cm}{List\_of\_hepato-biliary\_diseases\\Cramp\_fasciculation\_syndrome\\Adrenalectomy} & \parbox[t]{5cm}{heart disease\\asthma\\lung cancer} \\ \hline
+	\end{tabular}
+	\caption{The top entities and queries for several topics. It is clear that these queries are assigned topics that are relevant.}
+	\label{tbl:topics}
+\end{table*}
+
 In order to obtain the topics of all entities and queries we have trained a latent dirichlet allocation (LDA) model \cite{blei2003latent} on the entire Wikipedia corpus. We used the Vowpal Wabbit implementation \cite{langford2011vowpal}, which uses feature hashing and streaming to reduce the memory requirements. The trained model is used to compute the topic-probability vectors of every entity and query.
 
 Using only the cosine distance between topic vectors of queries and entities is not sufficient to accurately annotate the queries. This is because annotations are often not specific enough. Even though we know a query and an entity are both about politics, it is difficult to determine more subtle differences that are of importance to the annotation (e.g. politics of what country).
@@ -65,6 +78,8 @@ Instead, we used our topic model as a way to post-process annotations that were 
 \caption{Strict $F_1$ score of different thresholds on the training set. The optimal values are $0.85$ and $0.2$.}
 \label{fig:gridsearch}
 \end{figure}
+
+To inspect our topic models and see if they make sense, we have listed the top entities and top queries for several topics in table \ref{tbl:topics}. We don't list the word-topic distributions, because these are difficult to obtain due to the non-invertible property of feature hashing. From this table we can see that for example topic 54 is about food (wikipedia pages such as Cream\_of\_asparagus\_soup score high). Queries that score high in this topic are also about food (e.g. "rice recipes").
 
 \section{Results}
 In table \ref{tbl:results} you can see our results in terms of strict and lazy $F_1$ score on the training and dev data sets. Our system approaches the performance of tagme on the train data set and surpasses it on the dev data set.
