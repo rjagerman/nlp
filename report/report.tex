@@ -25,10 +25,11 @@ Given a set of real search queries, the task is to automatically annotate the qu
 To annotate queries we have implemented numerous algorithms. In the following sections we will explain the ideas behind our approaches and their results.
 
 \section{Failed Approaches}
+
 \subsection{Wikipedia Categories}
-The idea was to determine the similarity of two entities by looking at the overlap of the categories they belonged to. To further increase the quality we took into account the links: should one entity link to the other one, we increase the similarity score and should there be a link back the score is increased even more.
+In order to annotate queries, we consider a list of candidate entities and try to find the best combination that does not overlap. To achieve this we look at the similarity between pairs of entities from our candidates. To determine the similarity of two entities we look at the overlap of the wikipedia categories they belong to. To further increase the quality we took into account the links: should one entity link to the other one, we increase the similarity score and should there be a link back the score is increased even more.
 We ran into problems with getting the data of the categories. We then decided to use the Wikipedia API to query the categories, which takes a long time, so we decided to filter the crosswikis file by looking only at entries with prior greater than 0.01. However this lead to a very reduced crosswikis file with only 70,000 entities.
-This lead to a very low F1 score, since for many annotations the correct entity was not in the filtered crosswikis file.  
+This resulted in a very low F1 score, since for many annotations the correct entity was not in the filtered crosswikis file.  
 
 \subsection{Bruteforce Similarities}
 For this approach, all combinations of possible annotations of all $n$-grams are generated. These annotations are the top 3 entities for every mention starting with the highest prior, taken from the crosswikis file. To find the best combination, a score is computed for each one that is determined by the sum of a similarity score between each two annotations in each combination. Two types of similarity scores have been tested: occurrence counts (i.e. the number of times two entities occur in the same Wikipedia article) and Tagme relatedness. If there is a tie, the best combination is determined by the sum of the prior and length of each annotation.
@@ -39,7 +40,7 @@ However, similarity turned out not to be the best indicator for annotations, as 
 The heuristics approach uses the naive annotator and attempts to improve on it. Similar to the naive approach, we annotate greedily by spot length, but additionally perform the following steps which helped improve performance:
 \begin{itemize}
 \item Lowercase all mentions in the crosswikis and queries.
-\item Remove special characters (anything not alphanumerical).
+\item Remove special characters.
 \item Remove mentions that start or end with a stopword.
 \end{itemize}
 
@@ -104,9 +105,9 @@ In table \ref{tbl:results} you can see our results in terms of strict and lazy $
 \end{table}
 
 \section{Conclusion \& Future Work}
-Annotating simply with the highest prior annotation turned out to give the best results. A reason for this could be the simplicity of an average query, i.e. people usually look for the most common things. Moreover, the evaluation depends very much on having the correct entity set. As not every entity used by the human annotator is included in the entity set of the crosswiki file, it is impossible to get 100\% correct annotations. We measured that our theoretical upper bound is 72.3\%. In addition, LDA is able to help removing false positives and in some cases replace false positives with true positives.
+Simple annotations using the highest prior turned out to give good results. A reason for this could be the simplicity of an average query, i.e. people usually look for the most common things. Moreover, the evaluation depends very much on having the correct entity set. As not every entity used by the human annotator is included in the entity set of the crosswiki file, it is impossible to get a 100\% $F_1$ score. We measured that our theoretical upper bound for strict $F_1$ is 72.3\%. In addition, LDA is able to help remove false positives and in some cases replace them with true positives.
 
-In future work, we would try to improve the Wikipedia approach by using the complete Wikipedia and not just 70,000 entities (which would require more memory). Moreover, improvement is expected from tuning the LDA hyperparameters.
+In future work, we would try to improve the Wikipedia approach by using the complete Wikipedia and not just 70,000 entities (which would require more memory). Moreover, improvement is expected from tuning the LDA hyperparameters and finding an optimal number of  topics.
 
 \bibliographystyle{ieeetr}
 \bibliography{references}
